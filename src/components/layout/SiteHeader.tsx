@@ -16,11 +16,15 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-bg/90 backdrop-blur">
       <Container className="flex items-center justify-between py-4">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-10">
           <Logo />
-          <nav className="hidden items-center gap-5 text-sm text-muted lg:flex">
+          <nav className="hidden items-center gap-3 text-sm text-muted lg:flex">
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className="transition hover:text-text">
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-full px-3 py-1.5 transition hover:bg-bgSoft hover:text-text"
+              >
                 {item.label}
               </Link>
             ))}
