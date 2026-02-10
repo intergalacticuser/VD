@@ -1,0 +1,274 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProjectStatus {
+  NEW
+  IN_REVIEW
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SenderRole {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+}
+
+enum EmailOutboxStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String?
+  email           String?        @unique
+  phone           String?
+  passwordHash    String?
+  role            Role           @default(USER)
+  isDisabled      Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  lastLoginAt     DateTime?
+  deletedAt       DateTime?
+  anonymizedAt    DateTime?
+  projects        Project[]
+  uploadedFiles   File[]         @relation("UploadedBy")
+  messages        Message[]      @relation("MessageSender")
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  inquiries       Inquiry[]
+  accounts        Account[]
+  sessions        Session[]
+  sentEmails      EmailOutbox[]  @relation("EmailRequestedBy")
+
+  @@index([role])
+  @@index([deletedAt])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  status      ProjectStatus @default(NEW)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  files       File[]
+  thread      MessageThread?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model File {
+  id               String   @id @default(cuid())
+  projectId        String
+  uploadedByUserId String?
+  originalName     String
+  mimeType         String
+  ext              String
+  sizeBytes        BigInt
+  storageKey       String   @unique
+  storageProvider  String
+  createdAt        DateTime @default(now())
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  uploadedBy       User?    @relation("UploadedBy", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([uploadedByUserId])
+}
+
+model MessageThread {
+  id        String    @id @default(cuid())
+  projectId String    @unique
+  createdAt DateTime  @default(now())
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  messages  Message[]
+
+  @@index([createdAt])
+}
+
+model Message {
+  id           String     @id @default(cuid())
+  threadId     String
+  senderUserId String?
+  senderRole   SenderRole
+  body         String
+  createdAt    DateTime   @default(now())
+  thread       MessageThread @relation(fields: [threadId], references: [id], onDelete: Restrict)
+  sender       User?      @relation("MessageSender", fields: [senderUserId], references: [id], onDelete: SetNull)
+
+  @@index([threadId])
+  @@index([createdAt])
+}
+
+model Inquiry {
+  id        String       @id @default(cuid())
+  userId    String?
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  user      User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  body      String
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  payload   Json
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json
+  ip          String?
+  createdAt   DateTime @default(now())
+  actor       User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType])
+}
+
+model GuestSubmission {
+  id          String   @id @default(cuid())
+  referenceId String   @unique
+  name        String
+  email       String
+  description String?
+  fileName    String
+  fileExt     String
+  fileMime    String
+  sizeBytes   BigInt
+  storageKey  String   @unique
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model EmailOutbox {
+  id            String           @id @default(cuid())
+  toEmail       String
+  subject       String
+  htmlBody      String
+  textBody      String?
+  status        EmailOutboxStatus @default(PENDING)
+  requestedById String?
+  attempts      Int              @default(0)
+  lastError     String?
+  sentAt        DateTime?
+  createdAt     DateTime         @default(now())
+  requestedBy   User?            @relation("EmailRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([sessionToken])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
