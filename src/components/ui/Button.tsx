@@ -33,7 +33,7 @@ export function ButtonLink({
   className,
   variant = "primary"
 }: {
-  href: string;
+  href: React.ComponentProps<typeof Link>["href"];
   children: React.ReactNode;
   className?: string;
   variant?: ButtonVariant;

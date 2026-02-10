@@ -56,8 +56,10 @@ model User {
   notifications   Notification[]
   auditLogs       AuditLog[]
   inquiries       Inquiry[]
+  passwordResets  PasswordResetToken[]
   accounts        Account[]
   sessions        Session[]
+  authenticators  Authenticator[]
   sentEmails      EmailOutbox[]  @relation("EmailRequestedBy")
 
   @@index([role])

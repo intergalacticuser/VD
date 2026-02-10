@@ -6,6 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "./db";
 import { loginSchema } from "./validation/auth";
+import { Role } from "@prisma/client";
 
 const oauthProviders = [];
 
@@ -76,8 +77,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, user }) {
       if (session.user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true }
+        });
         session.user.id = user.id;
-        session.user.role = user.role;
+        session.user.role = dbUser?.role ?? Role.USER;
       }
       return session;
     }

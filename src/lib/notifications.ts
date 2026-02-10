@@ -1,10 +1,11 @@
 import { prisma } from "./db";
 import { queueEmail } from "./email";
+import { Prisma } from "@prisma/client";
 
 export async function notifyUser(params: {
   userId: string;
   type: string;
-  payload: Record<string, unknown>;
+  payload: Prisma.InputJsonValue;
   email?: { to: string; subject: string; html: string; text?: string };
 }): Promise<void> {
   await prisma.notification.create({
@@ -28,7 +29,7 @@ export async function notifyUser(params: {
 
 export async function notifyAdmins(params: {
   type: string;
-  payload: Record<string, unknown>;
+  payload: Prisma.InputJsonValue;
   email?: { subject: string; html: string; text?: string };
 }): Promise<void> {
   const admins = await prisma.user.findMany({ where: { role: "ADMIN", deletedAt: null, isDisabled: false } });

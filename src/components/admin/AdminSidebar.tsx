@@ -7,7 +7,7 @@ const links = [
   { href: "/admin/inquiries", label: "Inquiries" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/logs", label: "Audit Logs" }
-];
+] as const;
 
 export function AdminSidebar() {
   return (

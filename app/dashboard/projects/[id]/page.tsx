@@ -6,12 +6,13 @@ import { ProjectMessageForm } from "@/components/forms/ProjectMessageForm";
 import { ProjectFileUploadForm } from "@/components/forms/ProjectFileUploadForm";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
   const userId = session?.user?.id ?? "";
 
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     include: {
       files: { orderBy: { createdAt: "desc" } },
       thread: { include: { messages: { orderBy: { createdAt: "asc" } } } }

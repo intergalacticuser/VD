@@ -3,7 +3,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { writeAuditLog } from "@/lib/audit";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -18,19 +19,19 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 
   await prisma.user.update({
-    where: { id: params.id },
+    where: { id },
     data: { role, isDisabled }
   });
 
   if (isDisabled) {
-    await prisma.session.deleteMany({ where: { userId: params.id } });
+    await prisma.session.deleteMany({ where: { userId: id } });
   }
 
   await writeAuditLog({
     actorUserId: session.user.id,
     action: "ADMIN_USER_UPDATE",
     entityType: "User",
-    entityId: params.id,
+    entityId: id,
     metadata: { role, isDisabled }
   });
 

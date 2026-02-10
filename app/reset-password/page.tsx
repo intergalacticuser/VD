@@ -3,12 +3,13 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
 
-export default function ResetPasswordPage({
+export default async function ResetPasswordPage({
   searchParams
 }: {
-  searchParams?: { token?: string };
+  searchParams?: Promise<{ token?: string }>;
 }) {
-  const token = searchParams?.token ?? "";
+  const params = searchParams ? await searchParams : undefined;
+  const token = params?.token ?? "";
 
   return (
     <Container className="space-y-10 pb-24 pt-16">

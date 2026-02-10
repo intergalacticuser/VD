@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,7 +15,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const file = await prisma.file.findFirst({
-    where: { id: body.fileId, projectId: params.id, uploadedByUserId: session.user.id }
+    where: { id: body.fileId, projectId: id, uploadedByUserId: session.user.id }
   });
 
   if (!file) {

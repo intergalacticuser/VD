@@ -10,7 +10,7 @@ const navItems = [
   { href: "/upload", label: "Upload" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" }
-];
+] as const;
 
 export function SiteHeader() {
   return (

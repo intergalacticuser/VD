@@ -5,7 +5,8 @@ import { updateProjectStatusSchema } from "@/lib/validation/project";
 import { notifyUser } from "@/lib/notifications";
 import { writeAuditLog } from "@/lib/audit";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -19,7 +20,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const project = await prisma.project.update({
-    where: { id: params.id },
+    where: { id },
     data: { status: parsed.data.status },
     include: { user: true }
   });

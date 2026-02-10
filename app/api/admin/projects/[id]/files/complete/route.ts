@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -14,7 +15,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const file = await prisma.file.findFirst({
-    where: { id: body.fileId, projectId: params.id }
+    where: { id: body.fileId, projectId: id }
   });
 
   if (!file) {

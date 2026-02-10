@@ -7,7 +7,7 @@ const links = [
   { href: "/dashboard/messages", label: "Messages" },
   { href: "/dashboard/settings", label: "Settings" },
   { href: "/dashboard/export", label: "Export" }
-];
+] as const;
 
 export function DashboardSidebar() {
   return (

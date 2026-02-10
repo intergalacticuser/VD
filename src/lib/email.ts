@@ -55,7 +55,7 @@ export async function processOutbox(limit = 20): Promise<{ sent: number; failed:
           to: email.toEmail,
           subject: email.subject,
           html: email.htmlBody,
-          text: email.textBody
+          text: email.textBody ?? undefined
         });
       }
 
