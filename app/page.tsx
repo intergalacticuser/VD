@@ -18,13 +18,13 @@ export default function HomePage() {
 
   return (
     <div className="relative space-y-20 overflow-hidden pb-24 pt-2">
-      {/* Purple-to-dark gradient behind hero logo */}
+      {/* Radial purple glow centered on logo, fading out in all directions */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[700px]"
         style={{
           background:
-            "linear-gradient(180deg, #3d1966 0%, rgba(61,25,102,0.6) 30%, rgba(25,10,45,0.25) 60%, transparent 100%)"
+            "radial-gradient(ellipse 70% 560px at 50% 160px, #3d1966 0%, #3d1966 28%, rgba(61,25,102,0.72) 48%, rgba(35,12,65,0.3) 68%, transparent 88%)"
         }}
       />
 
@@ -36,17 +36,17 @@ export default function HomePage() {
         <div className="relative flex justify-center pb-8">
           <span
             aria-hidden
-            className="pointer-events-none absolute top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-[#c9973a]/25 blur-3xl"
+            className="pointer-events-none absolute top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-[#c9973a]/20 blur-3xl"
           />
           <Image
             src="/logo.PNG"
             alt="VD Publishing"
-            width={280}
-            height={280}
-            className="relative h-56 w-auto object-contain"
+            width={360}
+            height={360}
+            className="relative h-72 w-auto object-contain"
             style={{
               filter:
-                "drop-shadow(0 0 16px rgba(201,151,58,0.65)) drop-shadow(0 0 40px rgba(201,151,58,0.3))"
+                "drop-shadow(0 0 20px rgba(201,151,58,0.7)) drop-shadow(0 0 50px rgba(201,151,58,0.3))"
             }}
             priority
           />
