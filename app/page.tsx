@@ -1,5 +1,5 @@
+import Image from "next/image";
 import { Container } from "@/components/layout/Container";
-import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SERVICE_CARDS } from "@/lib/constants";
@@ -12,17 +12,51 @@ const serviceCardStyles = [
 ] as const;
 
 export default function HomePage() {
+  const featuredWorkImage =
+    process.env.NEXT_PUBLIC_FEATURED_WORK_IMAGE_URL?.trim() || "/works/afghanistan-us-policy.jpg";
+  const featuredWorkUrl = "https://www.amazon.com/dp/B0GHZSP1NF";
+
   return (
-    <div className="relative space-y-20 overflow-hidden pb-24 pt-16">
+    <div className="relative space-y-20 overflow-hidden pb-24 pt-2">
+      {/* Purple-to-dark gradient behind hero logo */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+        style={{
+          background:
+            "linear-gradient(180deg, #3d1966 0%, rgba(61,25,102,0.6) 30%, rgba(25,10,45,0.25) 60%, transparent 100%)"
+        }}
+      />
+
       <span className="ambient-orb ambient-orb--gold -left-16 top-12 h-44 w-44" aria-hidden />
       <span className="ambient-orb ambient-orb--blue right-0 top-40 h-52 w-52" aria-hidden />
 
-      <Container className="grid gap-10 lg:grid-cols-[1.2fr,0.8fr]">
-        <div className="space-y-8">
-          <Badge className="border-accent/40 bg-[#1a1713] text-accent">Studio Signature</Badge>
-          <div className="relative space-y-4">
+      <Container>
+        {/* Hero logo – centered above grid */}
+        <div className="relative flex justify-center pb-8">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-[#c9973a]/25 blur-3xl"
+          />
+          <Image
+            src="/logo.PNG"
+            alt="VD Publishing"
+            width={280}
+            height={280}
+            className="relative h-56 w-auto object-contain"
+            style={{
+              filter:
+                "drop-shadow(0 0 16px rgba(201,151,58,0.65)) drop-shadow(0 0 40px rgba(201,151,58,0.3))"
+            }}
+            priority
+          />
+        </div>
+
+        <div className="grid gap-10 lg:grid-cols-[1.2fr,0.8fr]">
+          <div className="space-y-8">
+          <div className="relative space-y-6">
             <span aria-hidden className="pointer-events-none absolute -left-8 top-3 h-24 w-72 rounded-full bg-accent/20 blur-3xl" />
-            <p className="relative text-xs uppercase tracking-[0.34em] text-accent">VD Publishing</p>
+
             <h1 className="premium-title-glow relative max-w-3xl font-display text-5xl leading-tight text-text md:text-6xl">
               From Text to Book
             </h1>
@@ -47,9 +81,9 @@ export default function HomePage() {
               <p className="mt-2 text-xl text-text">ISBN + Global Channels</p>
             </Card>
           </div>
-        </div>
+          </div>
 
-        <Card className="space-y-6 border-accent/35 bg-gradient-to-br from-[#1b2230] to-[#131922]">
+          <Card className="space-y-6 border-accent/35 bg-gradient-to-br from-[#1b2230] to-[#131922]">
           <p className="text-sm uppercase tracking-[0.3em] text-muted">Studio Focus</p>
           <div className="space-y-4 text-sm text-muted">
             <p>Editorial development for fiction and nonfiction.</p>
@@ -64,6 +98,7 @@ export default function HomePage() {
             Schedule a Consultation
           </ButtonLink>
         </Card>
+        </div>
       </Container>
 
       <Container>
@@ -73,9 +108,6 @@ export default function HomePage() {
               key={service.title}
               className={`space-y-4 border transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,0.35)] ${serviceCardStyles[index % serviceCardStyles.length]}`}
             >
-              <span className="inline-flex rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-muted">
-                Service {index + 1}
-              </span>
               <h3 className="text-2xl text-text">{service.title}</h3>
               <p className="text-sm text-muted">{service.description}</p>
               <ButtonLink href="/upload" variant="ghost">
@@ -84,6 +116,68 @@ export default function HomePage() {
             </Card>
           ))}
         </div>
+      </Container>
+
+      <Container>
+        <Card className="grid gap-8 border-accent/25 bg-gradient-to-br from-[#141821] via-[#11151c] to-[#0f1115] md:grid-cols-[0.9fr,1.1fr]">
+          <a
+            href={featuredWorkUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-black/20"
+            aria-label="Open featured book on Amazon"
+          >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -left-10 top-10 h-48 w-48 rounded-full bg-accent/20 blur-3xl transition group-hover:bg-accent/30"
+            />
+            <div className="relative aspect-[3/4] w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={featuredWorkImage}
+                alt="Featured completed work book cover"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-contain p-6 transition duration-300 group-hover:scale-[1.01]"
+              />
+            </div>
+          </a>
+
+          <div className="flex flex-col justify-center space-y-5">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.34em] text-muted">Completed Works</p>
+              <h2 className="text-3xl text-text md:text-4xl">Afghanistan in U.S. Policy</h2>
+              <p className="max-w-xl text-sm text-muted">
+                A finished publishing project by VD Publishing. Click the cover to view the Amazon listing.
+              </p>
+            </div>
+
+            <div className="grid gap-3 text-sm text-muted sm:grid-cols-2">
+              <Card className="border-white/10 bg-black/15 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-muted">Services</p>
+                <p className="mt-2 text-sm text-text">Editorial, Translation, Production</p>
+              </Card>
+              <Card className="border-white/10 bg-black/15 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-muted">Outcome</p>
+                <p className="mt-2 text-sm text-text">Publication-ready deliverables</p>
+              </Card>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <a
+                href={featuredWorkUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-bg transition hover:bg-[#d6b276] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              >
+                View on Amazon
+              </a>
+              <ButtonLink href="/upload" variant="outline">
+                Start Your Manuscript
+              </ButtonLink>
+            </div>
+          </div>
+        </Card>
       </Container>
 
       <Container>
